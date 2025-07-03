@@ -1,6 +1,5 @@
-const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://127.0.0.1:27017/passmanagar");
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
   username: String,
