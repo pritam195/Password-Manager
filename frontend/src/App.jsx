@@ -6,6 +6,7 @@ import SignupPage from './Pages/SignupPage'
 import { Routes, Route } from 'react-router-dom'
 import AboutPage from './Pages/AboutPage'
 import ContactPage from './Pages/ContactPage.'
+import PasswordPage from './Pages/PasswordPage'
 
 export const Context = createContext();
 
@@ -21,6 +22,7 @@ function App() {
           <Route path='/signup' element={<SignupPage />}></Route>
         <Route path='/about' element={<AboutPage />}></Route>
         <Route path='/contact' element={<ContactPage />}></Route>
+        <Route path='/password' element={<PasswordPage/>}></Route>
         
         </Routes>
     </Context.Provider>

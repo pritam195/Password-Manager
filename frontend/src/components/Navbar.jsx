@@ -1,6 +1,26 @@
-import React from 'react';
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Context } from "../App";
 
 const Navbar = () => {
+  const { setKey } = useContext(Context);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.get("http://localhost:3000/logout", { withCredentials: true });
+
+      // Clear client-side state
+      setKey(null);
+      localStorage.removeItem("email");
+
+      // Redirect
+      navigate("/");
+    } catch (err) {
+      console.error("Logout failed", err.message);
+    }
+  }
   return (
     <nav className='bg-slate-800 text-black py-4 shadow-lg'>
       <div className='container mx-auto flex justify-between items-center px-6'>
@@ -24,6 +44,9 @@ const Navbar = () => {
               <a className='text-white hover:text-yellow-300 transition duration-300' href='/home'>Home</a>
             </li>
             <li>
+              <a className='text-white hover:text-yellow-300 transition duration-300' href='/password'>Passwords</a>
+            </li>
+            <li>
               <a className='text-white hover:text-yellow-300 transition duration-300' href='/about'>About</a>
             </li>
             <li>
@@ -32,10 +55,11 @@ const Navbar = () => {
           </ul>
         </div>
 
-        {/* GitHub Section */}
-        <button className='px-4 bg-white text-white rounded-md flex gap-1 items-center'>
-          <img className='w-10' src="/gith.png" alt="GitHub logo" />
-          <span className='text-green-400 font-bold'>GitHub</span>
+        <button
+          className="px-4 bg-white text-white rounded-md flex gap-1 items-center p-1"
+          onClick={handleLogout}
+        >
+          <span className="text-green-400 font-bold">Logout</span>
         </button>
       </div>
     </nav>

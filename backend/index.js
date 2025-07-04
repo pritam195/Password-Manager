@@ -34,32 +34,47 @@ app.get("/", (req, res) => {
 })
 
 app.post("/create", (req, res) => {
-  let { username, name, email, mobno, password, gender, dob } =
-        req.body;
+  const { username, name, email, mobno, password, gender, dob, secretKey } =
+    req.body;
 
   bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(password, salt, async (err, hash) => {
-      let createdUser = await userModel.create({
-        username,
-        email,
-        name,
-        password: hash,
-        dob,
-        mobno,
-        gender,
-      });
-      let token = jwt.sign({ username, email }, "abcde");
-        res.cookie("token", token);
-        
-        return res.status(200).json({
-            email : createdUser.email
-        })
+    if (err) {
+      console.error("Error generating salt:", err);
+      return res.status(500).json({ error: "Error generating salt" });
+    }
 
-      res.send(createdUser);
+    bcrypt.hash(password, salt, async (err, hash) => {
+      if (err) {
+        console.error("Error hashing password:", err);
+        return res.status(500).json({ error: "Error hashing password" });
+      }
+
+      try {
+        const createdUser = await userModel.create({
+          username,
+          email,
+          name,
+          password: hash,
+          secretKey: hash,
+          dob,
+          mobno,
+          gender,
+        });
+
+        const token = jwt.sign({ username, email }, "abcde");
+        res.cookie("token", token);
+
+        return res.status(200).json({
+          email: createdUser.email, 
+        });
+      } catch (err) {
+        console.error("User creation error:", err);
+        return res.status(500).json({ error: "Failed to create user" });
+      }
     });
-      
   });
 });
+
 
 app.post("/login", async function (req, res) {
   let user = await userModel.findOne({ email: req.body.email });
@@ -88,43 +103,85 @@ app.post("/login", async function (req, res) {
   });
 });
 
-app.post("/password", async function (req, res) {
-    let { email, username, password, site } = req.body;
-
-    let set = await passwordModel.create({
-        email,
-        username,
-        password,
-        site
-    })
-
-    res.send(set);
-})
+app.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  return res.status(200).json({ message: "Logged out successfully" });
+});
 
 
-app.get('/getpass', async (req, res) => {
+const { encrypt } = require("./utils/encryptUtils");
 
-  // const passwords = await passwordModel.find(); 
-  // res.json(passwords);
-   
-  // const email = "chavanpritam172@gmail.com";
-  // const passwordArray = await passwordModel.find({ email });
+app.post("/password", async (req, res) => {
+  const { email, username, password, site } = req.body;
 
-  // res.send(passwordArray);
+  try {
+    const encryptedPassword = encrypt(password);
 
-  const { email } = req.query;
+    const newPassword = await passwordModel.create({
+      email,
+      username,
+      password: encryptedPassword,
+      site,
+    });
 
-  if (!email) {
-    return res.status(400).json({ message: "Email is required" });
+    res.status(200).json(newPassword);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Encryption or Save Error", error: err.message });
+    console.error("Error saving password:", err);
+  }
+});
+
+
+
+const { decrypt } = require("./utils/encryptUtils"); // make sure this path is correct
+
+app.post("/getpass", async (req, res) => {
+  const { email, secretKey } = req.body;
+
+  if (!email || !secretKey) {
+    return res
+      .status(400)
+      .json({ message: "Email and secretKey are required" });
   }
 
   try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(secretKey, user.secretKey);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid secret key" });
+    }
+
     const passwordArray = await passwordModel.find({ email });
-    return res.status(200).json(passwordArray);
+    console.log("Fetched passwords:", passwordArray);
+
+    const decryptedPasswords = passwordArray.map((p) => {
+      try {
+        const decrypted = decrypt(p.password); // Try decryption
+        return { ...p._doc, password: decrypted };
+      } catch (err) {
+        console.error("Decryption failed for", p.site, err.message);
+        return { ...p._doc, password: "ErrorDecrypting" };
+      }
+    });
+
+    return res.status(200).json(decryptedPasswords);
   } catch (error) {
-    return res.status(500).json({ message: "Error fetching password :", error: error.message });
+    console.error("Server error in /getpass:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
-})
+});
+
+
+
 
 app.delete('/delete/:id', async (req, res) => {
   try {
@@ -146,8 +203,9 @@ app.put('/update/:id', async (req, res) => {
   try {
     const {id }= req.params;
     const { password } = req.body;
+    const encryptedPassword = encrypt(password);
     const editedPassword = await passwordModel.findByIdAndUpdate(id, {
-      password : password
+      password : encryptedPassword
     }, {new : true});
 
     if (!editedPassword) {

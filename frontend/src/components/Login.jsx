@@ -24,8 +24,6 @@ const Login = () => {
             if (response.status === 200) {
                 setKey(email);
                 localStorage.setItem("email", email);
-                alert("Key is " + email);
-                console.log("Response data:", response.data);
                 alert("Login Successful");
                 navigate('/home');
             }
@@ -129,7 +127,7 @@ const Login = () => {
                             Login
                         </button>
                     </form>
-                    <p className="text-sm text-center mt-4 text-gray-600">
+                    <p className="font-semibold text-gray-800 mt-2 mb-4">
                         Don't have an account? <a href="/signup" className="text-blue-500 hover:underline">Sign up</a>
                     </p>
                 </div>

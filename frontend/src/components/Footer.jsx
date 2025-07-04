@@ -6,7 +6,7 @@ import linkedin from '../assets/linkedIn.png'
 const Footer = () => {
   return (
     <footer className="bg-green-100 border-t border-green-300 mt-16">
-      <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-6 text-gray-700">
+      <div className="max-w-7xl mx-auto px-6  grid md:grid-cols-3 gap-6 text-gray-700">
 
         {/* Branding Section */}
         {/* Logo and Intro */}

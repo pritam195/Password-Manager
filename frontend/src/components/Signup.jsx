@@ -4,6 +4,7 @@ import logo from '../assets/logo.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Context } from "../App";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Signup = () => {
     const { key,setKey } = useContext(Context)
@@ -16,10 +17,26 @@ const Signup = () => {
         email: '',
         password: '',
         confirmPassword: '',
+        secretKey: '',
         gender: '',
         dob: '',
         agree: false,
     });
+
+    const [showPassword, setShowPassword] = useState({
+        secretKey: false,
+        password: false,
+        confirmPassword: false,
+    });
+    
+    const toggleVisibility = (field) => {
+        setShowPassword((prev) => ({
+            ...prev,
+            [field]: !prev[field],
+        }));
+    };
+    
+    
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -48,6 +65,7 @@ const Signup = () => {
                     username: formData.username,
                     mobno: formData.mobno,
                     email: formData.email,
+                    secretKey : formData.secretKey,
                     password: formData.password,
                     gender: formData.gender,
                     dob: formData.dob,
@@ -55,8 +73,9 @@ const Signup = () => {
                 { withCredentials: true }
             );
             setKey(response.data.email);
-            alert('Account created successfully!' + key);
-            alert('key is ' + key)
+            const email = response.data.email;
+            alert("Signup Successful");
+            localStorage.setItem("email", email);
             navigate('/home');
         } catch (err) {
             console.error('Signup failed', err.response?.data || err.message);
@@ -177,26 +196,66 @@ const Signup = () => {
                         className="w-full px-4 py-2 border rounded-md"
                     />
 
+                    <div className="relative">
+                        <input
+                            type={showPassword.secretKey ? 'text' : 'password'}
+                            name="secretKey"
+                            placeholder="Secret Key"
+                            value={formData.secretKey}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-4 py-2 border rounded-md"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => toggleVisibility('secretKey')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                        >
+                            {showPassword.secretKey ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                    </div>
+
                     {/* Passwords */}
                     <div className="flex gap-4">
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className="w-1/2 px-4 py-2 border rounded-md"
-                        />
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            placeholder="Confirm Password"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                            className="w-1/2 px-4 py-2 border rounded-md"
-                        />
+                        {/* Password */}
+                        <div className="relative w-1/2">
+                            <input
+                                type={showPassword.password ? 'text' : 'password'}
+                                name="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-4 py-2 border rounded-md"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => toggleVisibility('password')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                            >
+                                {showPassword.password ? <FaEyeSlash /> : <FaEye />}
+                            </button>
+                        </div>
+
+                        {/* Confirm Password */}
+                        <div className="relative w-1/2">
+                            <input
+                                type={showPassword.confirmPassword ? 'text' : 'password'}
+                                name="confirmPassword"
+                                placeholder="Confirm Password"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-4 py-2 border rounded-md"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => toggleVisibility('confirmPassword')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                            >
+                                {showPassword.confirmPassword ? <FaEyeSlash /> : <FaEye />}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Gender & DOB */}
@@ -235,6 +294,8 @@ const Signup = () => {
                         />
                         <label className="text-sm text-gray-700">I agree to the terms and conditions</label>
                     </div>
+
+                    <div className="font-semibold text-gray-800 mt-2 mb-4"> Already have an account? <a href="/" className="text-blue-500 hover:underline">Login</a></div>
 
                     {/* Submit */}
                     <button
