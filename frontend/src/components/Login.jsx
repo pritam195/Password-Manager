@@ -16,7 +16,7 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await axios.post(
-                'http://localhost:3000/login',
+                'https://password-manager-ovh2.onrender.com/login',
                 { email, password },
                 { withCredentials: true }
             );

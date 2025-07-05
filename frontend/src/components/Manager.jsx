@@ -15,7 +15,7 @@ const Manager = () => {
     const savePassword = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:3000/password", {
+            const res = await axios.post("https://password-manager-ovh2.onrender.com/password", {
                 email: key,
                 ...form
             }, { withCredentials: true });

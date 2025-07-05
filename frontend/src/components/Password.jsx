@@ -12,7 +12,7 @@ const Password = () => {
 
     const handleUnlock = async () => {
         try {
-            const res = await axios.post("http://localhost:3000/getpass", {
+            const res = await axios.post("https://password-manager-ovh2.onrender.com/getpass", {
                 email: key,
                 secretKey
             }, { withCredentials: true });
@@ -33,7 +33,7 @@ const Password = () => {
     const deletePassword = async (id) => {
         if (!window.confirm("Are you sure you want to delete?")) return;
         try {
-            await axios.delete(`http://localhost:3000/delete/${id}`, { withCredentials: true });
+            await axios.delete(`https://password-manager-ovh2.onrender.com/delete/${id}`, { withCredentials: true });
             setPasswords(passwords.filter(p => p._id !== id));
             alert("Deleted successfully.");
         } catch (err) {
@@ -46,7 +46,7 @@ const Password = () => {
         if (!newPassword) return;
 
         try {
-            await axios.put(`http://localhost:3000/update/${id}`, {
+            await axios.put(`https://password-manager-ovh2.onrender.com/update/${id}`, {
                 password: newPassword
             }, { withCredentials: true });
             alert("Updated!");
