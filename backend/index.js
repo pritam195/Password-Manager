@@ -26,7 +26,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://passwordmanager-iota.vercel.app/",
+    origin: "https://passwordmanager-iota.vercel.app",
     credentials: true,
   })
 );
