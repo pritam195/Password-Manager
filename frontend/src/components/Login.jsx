@@ -16,7 +16,7 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await axios.post(
-                'https://password-manager-ovh2.onrender.com/login',
+                'https://password-manager-m7r4.onrender.com/login',
                 { email, password },
                 { withCredentials: true }
             );

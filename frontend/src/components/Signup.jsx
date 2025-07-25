@@ -59,7 +59,7 @@ const Signup = () => {
 
         try {
             const response = await axios.post(
-                'https://password-manager-ovh2.onrender.com/create',
+                'https://password-manager-m7r4.onrender.com/create',
                 {
                     name: formData.name,
                     username: formData.username,

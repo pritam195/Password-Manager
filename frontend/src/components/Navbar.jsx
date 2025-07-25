@@ -9,7 +9,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("https://password-manager-ovh2.onrender.com/logout", { withCredentials: true });
+      await axios.get("https://password-manager-m7r4.onrender.com/logout", { withCredentials: true });
 
       // Clear client-side state
       setKey(null);

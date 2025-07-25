@@ -22,7 +22,7 @@ const ContactPage = () => {
 
         try {
             const response = await axios.post(
-                'https://password-manager-ovh2.onrender.com/contact',
+                'https://password-manager-m7r4.onrender.com/contact',
                 {
                     name: form.name,
                     email: form.email,
